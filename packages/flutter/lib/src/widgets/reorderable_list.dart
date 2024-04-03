@@ -1314,7 +1314,7 @@ typedef _DragItemCallback = void Function(_DragInfo item);
 
 class _DragInfo extends Drag {
   _DragInfo({
-    required this.item,
+    required _ReorderableItemState item,
     Offset initialPosition = Offset.zero,
     this.scrollDirection = Axis.vertical,
     this.onUpdate,
@@ -1346,7 +1346,6 @@ class _DragInfo extends Drag {
     scrollable = Scrollable.of(item.context);
   }
 
-  final _ReorderableItemState item;
   final Axis scrollDirection;
   final _DragItemUpdate? onUpdate;
   final _DragItemCallback? onEnd;
@@ -1409,7 +1408,7 @@ class _DragInfo extends Drag {
   }
 
   Offset _adjustedDragOffset(Offset offset) {
-    final Rect? boundingRects = ReorderableDragBoundary._boundingRectsOf(item.context)?.shift(dragOffset);
+    final Rect? boundingRects = ReorderableDragBoundary._boundingRectsOf(listState)?.shift(dragOffset);
     if (boundingRects != null) {
       final double adjustedX = clampDouble(
         offset.dx,
@@ -1576,17 +1575,6 @@ class _ReorderableItemGlobalKey extends GlobalObjectKey {
 /// When this widget wraps a [ReorderableList], the drag boundary of the [ReorderableList] is confined within this widget.
 /// If the [dragBoundingRect] property is provided, the drag boundary is limited to the rectangle returned by [dragBoundingRect].
 /// The boundary is specified in global coordinates.
-///
-/// Usage:
-///
-/// ```dart
-/// ReorderableDragBoundary(
-///   dragBoundingRect: (state) => Rect.fromLTWH(0, 0, 300, 600),
-///   child: ReorderableList(...),
-/// )
-/// ```
-///
-/// In this example, the [ReorderableList] drag boundary is limited to a 300x600 rectangle starting from the origin (0,0).
 class ReorderableDragBoundary extends InheritedWidget {
   /// Create a [ReorderableDragBoundary] to set the drag boundary for the [ReorderableList].
   ///
@@ -1605,15 +1593,15 @@ class ReorderableDragBoundary extends InheritedWidget {
     return oldWidget.dragBoundingRect != dragBoundingRect;
   }
 
-  static Rect? _boundingRectsOf(BuildContext context) {
-    final InheritedElement? element = context.getElementForInheritedWidgetOfExactType<ReorderableDragBoundary>();
+  static Rect? _boundingRectsOf(SliverReorderableListState listState) {
+    final InheritedElement? element = listState.context.getElementForInheritedWidgetOfExactType<ReorderableDragBoundary>();
     if (element == null) {
       return null;
     }
     final ReorderableDragBoundary dragBoundary = element.widget as ReorderableDragBoundary;
     final Rect boundingRect;
     if (dragBoundary.dragBoundingRect != null) {
-      boundingRect = dragBoundary.dragBoundingRect!.call(SliverReorderableList.of(context));
+      boundingRect = dragBoundary.dragBoundingRect!.call(listState);
     } else {
       final RenderBox renderBox = element.findRenderObject()! as RenderBox;
       boundingRect = renderBox.localToGlobal(Offset.zero) & renderBox.size;
