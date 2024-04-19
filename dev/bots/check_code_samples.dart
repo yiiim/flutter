@@ -311,9 +311,7 @@ class SampleChecker {
 final Set<String> _knownMissingTests = <String>{
   'examples/api/test/material/bottom_app_bar/bottom_app_bar.2_test.dart',
   'examples/api/test/material/bottom_app_bar/bottom_app_bar.1_test.dart',
-  'examples/api/test/material/theme/theme_extension.1_test.dart',
   'examples/api/test/material/material_state/material_state_border_side.0_test.dart',
-  'examples/api/test/material/material_state/material_state_mouse_cursor.0_test.dart',
   'examples/api/test/material/material_state/material_state_outlined_border.0_test.dart',
   'examples/api/test/material/material_state/material_state_property.0_test.dart',
   'examples/api/test/material/selectable_region/selectable_region.0_test.dart',
@@ -465,7 +463,6 @@ final Set<String> _knownMissingTests = <String>{
   'examples/api/test/widgets/tween_animation_builder/tween_animation_builder.0_test.dart',
   'examples/api/test/widgets/single_child_scroll_view/single_child_scroll_view.1_test.dart',
   'examples/api/test/widgets/single_child_scroll_view/single_child_scroll_view.0_test.dart',
-  'examples/api/test/widgets/overflow_bar/overflow_bar.0_test.dart',
   'examples/api/test/widgets/restoration/restoration_mixin.0_test.dart',
   'examples/api/test/widgets/actions/actions.0_test.dart',
   'examples/api/test/widgets/actions/action_listener.0_test.dart',
