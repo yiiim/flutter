@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'constants.dart';
-import 'darg_boundary.dart';
+import 'drag_boundary.dart';
 import 'drag_details.dart';
 import 'events.dart';
 import 'recognizer.dart';
@@ -18,8 +18,8 @@ export 'dart:ui' show PointerDeviceKind;
 
 export 'package:flutter/foundation.dart' show DiagnosticPropertiesBuilder;
 
-export 'darg_boundary.dart' show DragBoundary, DragOutOfBoundaryBehavior, DragPointBoundary, DragRectBoundary;
 export 'drag.dart' show DragEndDetails, DragUpdateDetails;
+export 'drag_boundary.dart' show DragBoundary, DragOutOfBoundaryBehavior, DragPointBoundary, DragRectBoundary;
 export 'drag_details.dart' show DragDownDetails, DragStartDetails, DragUpdateDetails, GestureDragDownCallback, GestureDragOutOfBoundaryCallback, GestureDragStartCallback, GestureDragUpdateCallback;
 export 'events.dart' show PointerDownEvent, PointerEvent, PointerPanZoomStartEvent;
 export 'recognizer.dart' show DragStartBehavior;
@@ -34,7 +34,7 @@ enum _DragState {
 /// Signature for create boundaries
 ///
 /// Used by [DragGestureRecognizer.createDragBoundary].
-typedef CreateDragBoundary = DragBoundary Function(OffsetPair initialPosition);
+typedef CreateDragBoundary = DragBoundary Function(Offset initialPosition);
 
 /// {@template flutter.gestures.monodrag.GestureDragEndCallback}
 /// Signature for when a pointer that was previously in contact with the screen
@@ -838,7 +838,7 @@ abstract class DragGestureRecognizer extends OneSequenceGestureRecognizer {
       );
       invokeCallback<void>('onStart', () => onStart!(details));
     }
-    _dragBoundary = createDragBoundary?.call(_initialPosition);
+    _dragBoundary = createDragBoundary?.call(_initialPosition.global);
     final bool isInBoundary = _isWithInBoundary(_initialPosition.global);
     if (!isInBoundary) {
       if (boundaryBehavior == DragOutOfBoundaryBehavior.cancel) {
@@ -939,11 +939,6 @@ abstract class DragGestureRecognizer extends OneSequenceGestureRecognizer {
     resolve(GestureDisposition.rejected);
     stopTrackingPointer(_activePointer!);
     _checkCancel();
-    _hasDragThresholdBeenMet = false;
-    _velocityTrackers.clear();
-    _initialButtons = null;
-    _state = _DragState.ready;
-    _dragBoundary = null;
   }
 
   @override

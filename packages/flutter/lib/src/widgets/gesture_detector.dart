@@ -127,7 +127,7 @@ abstract class GestureDragBoundaryProvider {
   /// For [DragRectBoundaryProvider], it is used as the dragged rectangle.
   ///
   /// The [initialPosition] parameter represents the initial position of the drag gesture.
-  DragBoundary getDragBoundary(BuildContext context, OffsetPair initialPosition);
+  DragBoundary getDragBoundary(BuildContext context, Offset initialPosition);
 }
 
 /// A widget that detects gestures.
@@ -1104,7 +1104,7 @@ class GestureDetector extends StatelessWidget {
 
   CreateDragBoundary? _getCreateDragBoundary(BuildContext context) {
     if (dragBoundaryProviderBuilder != null) {
-      return (OffsetPair initialPosition) => dragBoundaryProviderBuilder!(context).getDragBoundary(context, initialPosition);
+      return (Offset initialPosition) => dragBoundaryProviderBuilder!(context).getDragBoundary(context, initialPosition);
     }
     return null;
   }
@@ -1848,9 +1848,9 @@ class _GestureDragBoundaryProvider extends GestureDragBoundaryProvider {
   _GestureDragBoundaryProvider(this.boundary);
   final Rect boundary;
   @override
-  DragBoundary getDragBoundary(BuildContext context, OffsetPair initialPosition) {
+  DragBoundary getDragBoundary(BuildContext context, Offset initialPosition) {
     final Size size = context.size!;
-    final Offset offset = (context.findRenderObject()! as RenderBox).globalToLocal(initialPosition.global);
+    final Offset offset = (context.findRenderObject()! as RenderBox).globalToLocal(initialPosition);
     return DragRectBoundary(boundary: boundary, rectSize: size, rectOffset: offset);
   }
 }
@@ -1894,7 +1894,7 @@ class _GesturePointBoundaryProvider extends GestureDragBoundaryProvider {
   _GesturePointBoundaryProvider(this.boundary);
   final Rect boundary;
   @override
-  DragBoundary getDragBoundary(BuildContext context, OffsetPair initialPosition) {
+  DragBoundary getDragBoundary(BuildContext context, Offset initialPosition) {
     return DragPointBoundary(boundary);
   }
 }
@@ -1925,8 +1925,8 @@ class DragPointBoundaryProvider extends InheritedWidget {
   /// Retrieves the [GestureDragBoundaryProvider] from the nearest ancestor
   /// [DragPointBoundaryProvider] widget.
   static GestureDragBoundaryProvider of(BuildContext context) {
-    final InheritedElement? element = context.getElementForInheritedWidgetOfExactType<DragRectBoundaryProvider>();
-    assert(element != null, 'No DragRectBoundaryProvider found in context');
+    final InheritedElement? element = context.getElementForInheritedWidgetOfExactType<DragPointBoundaryProvider>();
+    assert(element != null, 'No DragPointBoundaryProvider found in context');
     final RenderBox? rb = element!.findRenderObject() as RenderBox?;
     assert(rb != null && rb.hasSize, 'RenderBox is not ready yet, You may be accessing before the drag gesture starts');
     return _GesturePointBoundaryProvider(rb!.localToGlobal(Offset.zero) & rb.size);
