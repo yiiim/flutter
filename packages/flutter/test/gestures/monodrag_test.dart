@@ -161,10 +161,10 @@ void main() {
       pan
         ..onlyAcceptDragOnThreshold = false
         ..onStart = (DragStartDetails details) {
-          dragCallbacks.add('onStart(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutOfBoundary'})');
+          dragCallbacks.add('onStart(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutBoundary'})');
         }
         ..onUpdate = (DragUpdateDetails details) {
-          dragCallbacks.add('onUpdate(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutOfBoundary'})');
+          dragCallbacks.add('onUpdate(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutBoundary'})');
         }
         ..onEnd = (DragEndDetails details) {
           dragCallbacks.add('onEnd');
@@ -190,7 +190,7 @@ void main() {
       tester.route(down);
       tester.route(move);
       tester.route(up);
-      expect(dragCallbacks, <String>['onStart(InBoundary)', 'onUpdate(OutOfBoundary)', 'onEnd']);
+      expect(dragCallbacks, <String>['onStart(InBoundary)', 'onUpdate(OutBoundary)', 'onEnd']);
   });
 
   testGesture('The drag gesture is cancelled when it exceeds the boundary.', (GestureTester tester) {
@@ -202,7 +202,7 @@ void main() {
             rectSize: const Size(100, 100)
           );
         },
-        cancelWhenOutOfBoundary: true,
+        cancelWhenOutsideBoundary: true,
       );
       final List<String> dragCallbacks = <String>[];
       pan

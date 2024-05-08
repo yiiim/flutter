@@ -87,12 +87,12 @@ abstract class DragGestureRecognizer extends OneSequenceGestureRecognizer {
     this.multitouchDragStrategy = MultitouchDragStrategy.latestPointer,
     this.velocityTrackerBuilder = _defaultBuilder,
     this.onlyAcceptDragOnThreshold = false,
-    this.cancelWhenOutOfBoundary = false,
+    this.cancelWhenOutsideBoundary = false,
     this.createDragBoundary,
     super.supportedDevices,
     AllowedButtonsFilter? allowedButtonsFilter,
   }) : assert(
-          !cancelWhenOutOfBoundary || createDragBoundary != null
+          !cancelWhenOutsideBoundary || createDragBoundary != null
        ), super(allowedButtonsFilter: allowedButtonsFilter ?? _defaultButtonAcceptBehavior);
 
   static VelocityTracker _defaultBuilder(PointerEvent event) => VelocityTracker.withKind(event.kind);
@@ -110,7 +110,7 @@ abstract class DragGestureRecognizer extends OneSequenceGestureRecognizer {
 
   /// Whether to cancel the gesture when it moves out of the boundary
   /// specified by [createDragBoundary], defaults to false.
-  bool cancelWhenOutOfBoundary;
+  bool cancelWhenOutsideBoundary;
 
   /// Configure the behavior of offsets passed to [onStart].
   ///
@@ -823,7 +823,7 @@ abstract class DragGestureRecognizer extends OneSequenceGestureRecognizer {
       );
       invokeCallback<void>('onStart', () => onStart!(details));
     }
-    if (!isInBoundary && cancelWhenOutOfBoundary) {
+    if (!isInBoundary && cancelWhenOutsideBoundary) {
       _boundaryCancel();
     }
   }
@@ -836,7 +836,7 @@ abstract class DragGestureRecognizer extends OneSequenceGestureRecognizer {
     Offset? localPosition,
   }) {
     final bool isInBoundary = _isWithInBoundary(globalPosition);
-    if (!isInBoundary && cancelWhenOutOfBoundary) {
+    if (!isInBoundary && cancelWhenOutsideBoundary) {
       _boundaryCancel();
       return;
     }
@@ -934,7 +934,7 @@ class VerticalDragGestureRecognizer extends DragGestureRecognizer {
     super.supportedDevices,
     super.allowedButtonsFilter,
     super.createDragBoundary,
-    super.cancelWhenOutOfBoundary,
+    super.cancelWhenOutsideBoundary,
   });
 
   @override
@@ -996,7 +996,7 @@ class HorizontalDragGestureRecognizer extends DragGestureRecognizer {
     super.supportedDevices,
     super.allowedButtonsFilter,
     super.createDragBoundary,
-    super.cancelWhenOutOfBoundary,
+    super.cancelWhenOutsideBoundary,
   });
 
   @override
@@ -1055,7 +1055,7 @@ class PanGestureRecognizer extends DragGestureRecognizer {
     super.supportedDevices,
     super.allowedButtonsFilter,
     super.createDragBoundary,
-    super.cancelWhenOutOfBoundary,
+    super.cancelWhenOutsideBoundary,
   });
 
   @override

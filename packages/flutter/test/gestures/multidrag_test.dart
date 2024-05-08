@@ -161,7 +161,7 @@ void main() {
     drag.onStart = (Offset position) {
       return TestDrag(
         onUpdate: (DragUpdateDetails details) {
-          dragCallbacks.add('update(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutOfBoundary'})');
+          dragCallbacks.add('update(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutBoundary'})');
         },
         onEnd: (DragEndDetails details) {
           dragCallbacks.add('end');
@@ -190,7 +190,7 @@ void main() {
     tester.route(down);
     tester.route(move);
     tester.route(up);
-    expect(dragCallbacks, <String>['update(InBoundary)', 'update(OutOfBoundary)', 'end']);
+    expect(dragCallbacks, <String>['update(InBoundary)', 'update(OutBoundary)', 'end']);
     drag.dispose();
   });
 
@@ -203,7 +203,7 @@ void main() {
           rectSize: const Size(100, 100)
         );
       },
-      cancelWhenOutOfBoundary: true,
+      cancelWhenOutsideBoundary: true,
     );
 
     final List<String> dragCallbacks = <String>[];

@@ -312,7 +312,7 @@ class GestureDetector extends StatelessWidget {
     this.trackpadScrollToScaleFactor = kDefaultTrackpadScrollToScaleFactor,
     this.supportedDevices,
     this.dragBoundaryProviderBuilder,
-    this.cancelWhenOutOfBoundary = false,
+    this.cancelWhenOutsideBoundary = false,
   }) : assert(() {
          final bool haveVerticalDrag = onVerticalDragStart != null || onVerticalDragUpdate != null || onVerticalDragEnd != null;
          final bool haveHorizontalDrag = onHorizontalDragStart != null || onHorizontalDragUpdate != null || onHorizontalDragEnd != null;
@@ -1063,7 +1063,7 @@ class GestureDetector extends StatelessWidget {
 
   /// Whether to cancel the drag gesture when it moves out of the boundary
   /// specified by [dragBoundaryProviderBuilder], defaults to false.
-  final bool cancelWhenOutOfBoundary;
+  final bool cancelWhenOutsideBoundary;
 
   CreateDragBoundary? _getCreateDragBoundary(BuildContext context) {
     if (dragBoundaryProviderBuilder != null) {
@@ -1197,7 +1197,7 @@ class GestureDetector extends StatelessWidget {
             ..multitouchDragStrategy = configuration.getMultitouchDragStrategy(context)
             ..gestureSettings = gestureSettings
             ..supportedDevices = supportedDevices
-            ..cancelWhenOutOfBoundary = cancelWhenOutOfBoundary
+            ..cancelWhenOutsideBoundary = cancelWhenOutsideBoundary
             ..createDragBoundary = _getCreateDragBoundary(context);
         },
       );
@@ -1221,7 +1221,7 @@ class GestureDetector extends StatelessWidget {
             ..multitouchDragStrategy = configuration.getMultitouchDragStrategy(context)
             ..gestureSettings = gestureSettings
             ..supportedDevices = supportedDevices
-            ..cancelWhenOutOfBoundary = cancelWhenOutOfBoundary
+            ..cancelWhenOutsideBoundary = cancelWhenOutsideBoundary
             ..createDragBoundary = _getCreateDragBoundary(context);
         },
       );
@@ -1245,7 +1245,7 @@ class GestureDetector extends StatelessWidget {
             ..multitouchDragStrategy = configuration.getMultitouchDragStrategy(context)
             ..gestureSettings = gestureSettings
             ..supportedDevices = supportedDevices
-            ..cancelWhenOutOfBoundary = cancelWhenOutOfBoundary
+            ..cancelWhenOutsideBoundary = cancelWhenOutsideBoundary
             ..createDragBoundary = _getCreateDragBoundary(context);
         },
       );

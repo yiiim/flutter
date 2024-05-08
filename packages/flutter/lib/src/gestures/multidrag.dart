@@ -239,10 +239,10 @@ abstract class MultiDragGestureRecognizer extends GestureRecognizer {
     required super.debugOwner,
     super.supportedDevices,
     AllowedButtonsFilter? allowedButtonsFilter,
-    this.cancelWhenOutOfBoundary = false,
+    this.cancelWhenOutsideBoundary = false,
     this.createDragBoundary,
   }) : assert(
-          !cancelWhenOutOfBoundary || createDragBoundary != null
+          !cancelWhenOutsideBoundary || createDragBoundary != null
        ), super(allowedButtonsFilter: allowedButtonsFilter ?? _defaultButtonAcceptBehavior);
 
   // Accept the input if, and only if, [kPrimaryButton] is pressed.
@@ -265,7 +265,7 @@ abstract class MultiDragGestureRecognizer extends GestureRecognizer {
 
   /// Whether to cancel the gesture when it moves out of the boundary
   /// specified by [createDragBoundary], defaults to false.
-  final bool cancelWhenOutOfBoundary;
+  final bool cancelWhenOutsideBoundary;
 
   Map<int, MultiDragPointerState>? _pointers = <int, MultiDragPointerState>{};
   final Map<MultiDragPointerState, DragBoundary> _pointerDragBoundarys = <MultiDragPointerState, DragBoundary>{};
@@ -295,7 +295,7 @@ abstract class MultiDragGestureRecognizer extends GestureRecognizer {
       DragBoundaryInfo? boundaryInfo;
       if (dragBoundary != null) {
         final bool isWithinBoundary = dragBoundary.isWithinBoundary(event.position);
-        if (!isWithinBoundary && cancelWhenOutOfBoundary) {
+        if (!isWithinBoundary && cancelWhenOutsideBoundary) {
           state._cancel();
           _removeState(event.pointer);
           return;
@@ -355,7 +355,7 @@ abstract class MultiDragGestureRecognizer extends GestureRecognizer {
         );
       }
       state._startDrag(drag, boundaryInfo);
-      if (boundaryInfo?.isWithinBoundary == false && cancelWhenOutOfBoundary) {
+      if (boundaryInfo?.isWithinBoundary == false && cancelWhenOutsideBoundary) {
         state._cancel();
         _removeState(pointer);
         return drag;
@@ -437,7 +437,7 @@ class ImmediateMultiDragGestureRecognizer extends MultiDragGestureRecognizer {
     super.debugOwner,
     super.supportedDevices,
     super.allowedButtonsFilter,
-    super.cancelWhenOutOfBoundary = false,
+    super.cancelWhenOutsideBoundary = false,
     super.createDragBoundary,
   });
 
@@ -545,7 +545,7 @@ class VerticalMultiDragGestureRecognizer extends MultiDragGestureRecognizer {
     super.debugOwner,
     super.supportedDevices,
     super.allowedButtonsFilter,
-    super.cancelWhenOutOfBoundary = false,
+    super.cancelWhenOutsideBoundary = false,
     super.createDragBoundary,
   });
 
@@ -652,7 +652,7 @@ class DelayedMultiDragGestureRecognizer extends MultiDragGestureRecognizer {
     super.debugOwner,
     super.supportedDevices,
     super.allowedButtonsFilter,
-    super.cancelWhenOutOfBoundary = false,
+    super.cancelWhenOutsideBoundary = false,
     super.createDragBoundary,
   });
 

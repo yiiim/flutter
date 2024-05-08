@@ -1086,10 +1086,10 @@ void main() {
                 return dragBoundary;
               },
               onPanStart: (DragStartDetails details) {
-                log.add('PanStart(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutOfBoundary'})');
+                log.add('PanStart(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutBoundary'})');
               },
               onPanUpdate: (DragUpdateDetails details) {
-                log.add('PanUpdate(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutOfBoundary'})');
+                log.add('PanUpdate(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutBoundary'})');
               },
               onPanEnd: (DragEndDetails details) {
                 log.add('PanEnd');
@@ -1113,7 +1113,7 @@ void main() {
       await drag.moveBy(const Offset(100.0, 100.0));
       await drag.up();
       await tester.pumpAndSettle();
-      expect(log, <String>['PanStart(InBoundary)', 'PanUpdate(InBoundary)', 'PanUpdate(OutOfBoundary)', 'PanEnd']);
+      expect(log, <String>['PanStart(InBoundary)', 'PanUpdate(InBoundary)', 'PanUpdate(OutBoundary)', 'PanEnd']);
     });
 
     testWidgets('Drag gesture boundary created using DragPointBoundaryProvider', (WidgetTester tester) async {
@@ -1132,10 +1132,10 @@ void main() {
                     return DragPointBoundaryProvider.of(context);
                   },
                   onPanStart: (DragStartDetails details) {
-                    log.add('PanStart(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutOfBoundary'})');
+                    log.add('PanStart(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutBoundary'})');
                   },
                   onPanUpdate: (DragUpdateDetails details) {
-                    log.add('PanUpdate(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutOfBoundary'})');
+                    log.add('PanUpdate(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutBoundary'})');
                   },
                   onPanEnd: (DragEndDetails details) {
                     log.add('PanEnd');
@@ -1161,7 +1161,7 @@ void main() {
       await drag.moveTo(rb.localToGlobal(Offset.zero) - const Offset(1, 1));
       await drag.up();
       await tester.pumpAndSettle();
-      expect(log, <String>['PanStart(InBoundary)', 'PanUpdate(InBoundary)', 'PanUpdate(OutOfBoundary)', 'PanEnd']);
+      expect(log, <String>['PanStart(InBoundary)', 'PanUpdate(InBoundary)', 'PanUpdate(OutBoundary)', 'PanEnd']);
     });
 
     testWidgets('Drag gesture boundary created using DragRectBoundaryProvider', (WidgetTester tester) async {
@@ -1180,10 +1180,10 @@ void main() {
                     return DragRectBoundaryProvider.of(context);
                   },
                   onPanStart: (DragStartDetails details) {
-                    log.add('PanStart(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutOfBoundary'})');
+                    log.add('PanStart(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutBoundary'})');
                   },
                   onPanUpdate: (DragUpdateDetails details) {
-                    log.add('PanUpdate(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutOfBoundary'})');
+                    log.add('PanUpdate(${details.boundaryInfo!.isWithinBoundary ? 'InBoundary' : 'OutBoundary'})');
                   },
                   onPanEnd: (DragEndDetails details) {
                     log.add('PanEnd');
@@ -1209,7 +1209,7 @@ void main() {
       await drag.moveTo(rb.localToGlobal(Offset.zero) + const Offset(49, 49));
       await drag.up();
       await tester.pumpAndSettle();
-      expect(log, <String>['PanStart(InBoundary)', 'PanUpdate(InBoundary)', 'PanUpdate(OutOfBoundary)', 'PanEnd']);
+      expect(log, <String>['PanStart(InBoundary)', 'PanUpdate(InBoundary)', 'PanUpdate(OutBoundary)', 'PanEnd']);
     });
   });
 }
