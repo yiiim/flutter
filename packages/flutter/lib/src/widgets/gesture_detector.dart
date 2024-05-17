@@ -1065,7 +1065,7 @@ class GestureDetector extends StatelessWidget {
   /// specified by [dragBoundaryProviderBuilder], defaults to false.
   ///
   /// {@tool dartpad}
-  /// In this example, Cancel the gesture when the dragged box is covered..
+  /// In this example, Cancel the gesture when the dragged box is covered.
   ///
   /// ** See code in examples/api/lib/widgets/gesture_detector/gesture_detector.4.dart **
   /// {@end-tool}
