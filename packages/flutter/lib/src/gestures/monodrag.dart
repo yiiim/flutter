@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'constants.dart';
+import 'controller.dart';
 import 'drag_details.dart';
 import 'events.dart';
 import 'recognizer.dart';
@@ -284,6 +285,7 @@ abstract class DragGestureRecognizer extends OneSequenceGestureRecognizer {
   late OffsetPair _pendingDragOffset;
   late OffsetPair _finalPosition;
   Duration? _lastPendingEventTimestamp;
+  bool _cancelledDueToControlEvent = false;
 
   /// When asserts are enabled, returns the last tracked pending event timestamp
   /// for this recognizer.
@@ -697,12 +699,18 @@ abstract class DragGestureRecognizer extends OneSequenceGestureRecognizer {
         _checkCancel();
 
       case _DragState.accepted:
-        _checkEnd(pointer);
+        if (_cancelledDueToControlEvent) {
+          resolve(GestureDisposition.rejected);
+          _checkCancel();
+        } else {
+          _checkEnd(pointer);
+        }
     }
     _hasDragThresholdBeenMet = false;
     _velocityTrackers.clear();
     _initialButtons = null;
     _state = _DragState.ready;
+    _cancelledDueToControlEvent = false;
   }
 
   void _giveUpPointer(int pointer) {
@@ -835,6 +843,18 @@ abstract class DragGestureRecognizer extends OneSequenceGestureRecognizer {
   void _checkCancel() {
     if (onCancel != null) {
       invokeCallback<void>('onCancel', onCancel!);
+    }
+  }
+
+  @override
+  void handleControlEvent(GestureControlEvent event) {
+    switch (event) {
+      case GestureControlCancelEvent():
+        if (_state == _DragState.accepted) {
+          _cancelledDueToControlEvent = true;
+          stopTrackingAllPointers();
+        }
+      default: super.handleControlEvent(event);
     }
   }
 

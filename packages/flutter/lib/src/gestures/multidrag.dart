@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'arena.dart';
 import 'binding.dart';
 import 'constants.dart';
+import 'controller.dart';
 import 'drag.dart';
 import 'drag_details.dart';
 import 'events.dart';
@@ -308,6 +309,28 @@ abstract class MultiDragGestureRecognizer extends GestureRecognizer {
       _removeState(pointer);
     }
     return drag;
+  }
+
+  @override
+  void handleControlEvent(GestureControlEvent event) {
+    switch (event) {
+      case GestureControlCancelEvent(pointer: final int? pointer):
+        assert(_pointers != null);
+        if (pointer != null) {
+          final MultiDragPointerState? state = _pointers![pointer];
+          if (state != null) {
+            state._cancel();
+            _removeState(pointer);
+          }
+        } else {
+          for (final int item in _pointers!.keys.toList()) {
+            _pointers![item]!._cancel();
+            _removeState(item);
+          }
+        }
+      default:
+        super.handleControlEvent(event);
+    }
   }
 
   @override

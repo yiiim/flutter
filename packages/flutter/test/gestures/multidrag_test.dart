@@ -8,7 +8,24 @@ import 'package:leak_tracker_flutter_testing/leak_tracker_flutter_testing.dart';
 
 import 'gesture_tester.dart';
 
-class TestDrag extends Drag { }
+class TestDrag extends Drag {
+  TestDrag({this.onUpdate, this.onEnd, this.onCancel});
+  final void Function(DragUpdateDetails details)? onUpdate;
+  final void Function(DragEndDetails details)? onEnd;
+  final void Function()? onCancel;
+  @override
+  void update(DragUpdateDetails details) {
+    onUpdate?.call(details);
+  }
+  @override
+  void end(DragEndDetails details) {
+    onEnd?.call(details);
+  }
+  @override
+  void cancel() {
+    onCancel?.call();
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -125,6 +142,48 @@ void main() {
       ),
       areCreateAndDispose,
     );
+  });
+
+  testGesture('Cancel the gesture using the cancel event.', (GestureTester tester) {
+    final GestureController controller = GestureController();
+    final List<String> dragCallbacks = <String>[];
+    final ImmediateMultiDragGestureRecognizer drag = ImmediateMultiDragGestureRecognizer()
+      ..onStart = (Offset position) {
+      return TestDrag(
+        onUpdate: (DragUpdateDetails details) {
+          dragCallbacks.add('update');
+        },
+        onEnd: (DragEndDetails details) {
+          dragCallbacks.add('end');
+        },
+        onCancel: () {
+          dragCallbacks.add('cancel');
+        },
+      );
+    };
+    controller.attach(drag);
+    const PointerDownEvent down = PointerDownEvent(
+        pointer: 6,
+        position: Offset(200.0, 200.0),
+      );
+    const PointerMoveEvent move = PointerMoveEvent(
+      pointer: 6,
+      delta: Offset(200.0, 200.0),
+      position: Offset(400.0, 400.0),
+    );
+    const PointerUpEvent up = PointerUpEvent(
+      pointer: 6,
+      position: Offset(400.0, 400.0),
+    );
+    drag.addPointer(down);
+    tester.closeArena(down.pointer);
+    tester.route(down);
+    controller.dispatch(GestureControlCancelEvent(pointer: 6));
+    tester.route(move);
+    tester.route(up);
+    expect(dragCallbacks, <String>['update', 'cancel']);
+    drag.dispose();
+    controller.detach(drag);
   });
 }
 

@@ -288,6 +288,7 @@ class GestureDetector extends StatelessWidget {
     this.trackpadScrollCausesScale = false,
     this.trackpadScrollToScaleFactor = kDefaultTrackpadScrollToScaleFactor,
     this.supportedDevices,
+    this.controller,
   }) : assert(() {
          final bool haveVerticalDrag = onVerticalDragStart != null || onVerticalDragUpdate != null || onVerticalDragEnd != null;
          final bool haveHorizontalDrag = onHorizontalDragStart != null || onHorizontalDragUpdate != null || onHorizontalDragEnd != null;
@@ -1017,6 +1018,19 @@ class GestureDetector extends StatelessWidget {
   /// {@macro flutter.gestures.scale.trackpadScrollToScaleFactor}
   final Offset trackpadScrollToScaleFactor;
 
+  /// This controller can be used to send [GestureControlEvent] control
+  /// events to influence the behavior of gestures.
+  ///
+  /// {@macro flutter.gestures.GestureControlEvent}
+  ///
+  /// {@tool dartpad}
+  /// This example, a cancel event is sent to the gesture to cancel
+  /// the drag when the [GestureDetector] is obscured during a drag gesture.
+  ///
+  /// ** See code in examples/api/lib/widgets/gesture_detector/gesture_detector.4.dart **
+  /// {@end-tool}
+  final GestureController? controller;
+
   @override
   Widget build(BuildContext context) {
     final Map<Type, GestureRecognizerFactory> gestures = <Type, GestureRecognizerFactory>{};
@@ -1228,6 +1242,7 @@ class GestureDetector extends StatelessWidget {
     return RawGestureDetector(
       gestures: gestures,
       behavior: behavior,
+      controller: controller,
       excludeFromSemantics: excludeFromSemantics,
       child: child,
     );
@@ -1293,6 +1308,7 @@ class RawGestureDetector extends StatefulWidget {
     this.behavior,
     this.excludeFromSemantics = false,
     this.semantics,
+    this.controller,
   });
 
   /// The widget below this widget in the tree.
@@ -1314,6 +1330,12 @@ class RawGestureDetector extends StatefulWidget {
   /// This defaults to [HitTestBehavior.deferToChild] if [child] is not null and
   /// [HitTestBehavior.translucent] if child is null.
   final HitTestBehavior? behavior;
+
+  /// This controller can be used to send [GestureControlEvent] control
+  /// events to influence the behavior of gestures.
+  ///
+  /// {@macro flutter.gestures.GestureControlEvent}
+  final GestureController? controller;
 
   /// Whether to exclude these gestures from the semantics tree. For
   /// example, the long-press gesture for showing a tooltip is
@@ -1403,7 +1425,7 @@ class RawGestureDetectorState extends State<RawGestureDetector> {
   void initState() {
     super.initState();
     _semantics = widget.semantics ?? _DefaultSemanticsGestureDelegate(this);
-    _syncAll(widget.gestures);
+    _syncAll(widget.gestures, reattachController: true);
   }
 
   @override
@@ -1412,7 +1434,11 @@ class RawGestureDetectorState extends State<RawGestureDetector> {
     if (!(oldWidget.semantics == null && widget.semantics == null)) {
       _semantics = widget.semantics ?? _DefaultSemanticsGestureDelegate(this);
     }
-    _syncAll(widget.gestures);
+    final bool controllerChanged = oldWidget.controller != widget.controller;
+    if (controllerChanged && oldWidget.controller != null) {
+      _recognizers!.values.forEach(oldWidget.controller!.detach);
+    }
+    _syncAll(widget.gestures, reattachController: controllerChanged);
   }
 
   /// This method can be called after the build phase, during the
@@ -1483,13 +1509,14 @@ class RawGestureDetectorState extends State<RawGestureDetector> {
   @override
   void dispose() {
     for (final GestureRecognizer recognizer in _recognizers!.values) {
+      widget.controller?.detach(recognizer);
       recognizer.dispose();
     }
     _recognizers = null;
     super.dispose();
   }
 
-  void _syncAll(Map<Type, GestureRecognizerFactory> gestures) {
+  void _syncAll(Map<Type, GestureRecognizerFactory> gestures, {bool reattachController = false}) {
     assert(_recognizers != null);
     final Map<Type, GestureRecognizer> oldRecognizers = _recognizers!;
     _recognizers = <Type, GestureRecognizer>{};
@@ -1497,12 +1524,17 @@ class RawGestureDetectorState extends State<RawGestureDetector> {
       assert(gestures[type] != null);
       assert(gestures[type]!._debugAssertTypeMatches(type));
       assert(!_recognizers!.containsKey(type));
-      _recognizers![type] = oldRecognizers[type] ?? gestures[type]!.constructor();
+      final bool isNewRecognizer = oldRecognizers[type] == null;
+      _recognizers![type] = isNewRecognizer ? gestures[type]!.constructor() : oldRecognizers[type]!;
       assert(_recognizers![type].runtimeType == type, 'GestureRecognizerFactory of type $type created a GestureRecognizer of type ${_recognizers![type].runtimeType}. The GestureRecognizerFactory must be specialized with the type of the class that it returns from its constructor method.');
       gestures[type]!.initializer(_recognizers![type]!);
+      if (widget.controller != null && (reattachController || isNewRecognizer)) {
+        widget.controller!.attach(_recognizers![type]!);
+      }
     }
     for (final Type type in oldRecognizers.keys) {
       if (!_recognizers!.containsKey(type)) {
+        widget.controller?.detach(oldRecognizers[type]!);
         oldRecognizers[type]!.dispose();
       }
     }

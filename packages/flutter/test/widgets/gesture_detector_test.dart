@@ -1073,6 +1073,48 @@ void main() {
       await tester.pumpAndSettle();
       expect(log, <String>['double-tap-down']);
     });
+
+    testWidgets('Cancel the drag gesture using the cancel event.', (WidgetTester tester) async {
+      final List<String> log = <String>[];
+      final GestureController controller = GestureController();
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Center(
+            child: Builder(builder: (BuildContext context){
+              return GestureDetector(
+                controller: controller,
+                onPanStart: (DragStartDetails details) {
+                  log.add('PanStart');
+                },
+                onPanUpdate: (DragUpdateDetails details) {
+                  log.add('PanUpdate');
+                },
+                onPanEnd: (DragEndDetails details) {
+                  log.add('PanEnd');
+                },
+                onPanCancel: () {
+                  log.add('PanCancel');
+                },
+                child: Container(
+                  width: 100.0,
+                  height: 100.0,
+                  color: const Color(0xFF00FF00),
+                ),
+              );
+            }),
+          ),
+        ),
+      );
+      final TestGesture drag = await tester.startGesture(tester.getCenter(find.byType(Container)));
+      await tester.pump(kLongPressTimeout);
+      await drag.moveBy(const Offset(10, 10));
+      controller.dispatch(GestureControlCancelEvent());
+      await drag.moveBy(const Offset(10, 10));
+      await drag.up();
+      await tester.pumpAndSettle();
+      expect(log, <String>['PanStart', 'PanUpdate', 'PanCancel']);
+    });
   });
 }
 

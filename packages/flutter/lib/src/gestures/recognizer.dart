@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'arena.dart';
 import 'binding.dart';
 import 'constants.dart';
+import 'controller.dart';
 import 'debug.dart';
 import 'events.dart';
 import 'pointer_router.dart';
@@ -298,6 +299,9 @@ abstract class GestureRecognizer extends GestureArenaMember with DiagnosticableT
     return _pointerToKind[pointer]!;
   }
 
+  /// Handle events from the gesture controller.
+  void handleControlEvent(GestureControlEvent event) { }
+
   /// Releases any resources used by the object.
   ///
   /// This method is called by the owner of this gesture recognizer
@@ -531,6 +535,18 @@ abstract class OneSequenceGestureRecognizer extends GestureRecognizer {
         didStopTrackingLastPointer(pointer);
       }
     }
+  }
+
+  /// Stops events related to all pointers from being routed to this recognizer.
+  ///
+  /// If there are any tracked pointers, It then calls [didStopTrackingLastPointer]
+  /// with the pointer ID of the last pointer that was being tracked.
+  ///
+  /// This method is typically called when a gesture recognizer stops recognizing
+  /// a gesture, such as when the gesture has been cancelled.
+  @protected
+  void stopTrackingAllPointers() {
+    List<int>.of(_trackedPointers).forEach(stopTrackingPointer);
   }
 
   /// Stops tracking the pointer associated with the given event if the event is

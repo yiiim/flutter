@@ -195,6 +195,48 @@ void main() {
       expect(recognized, <String>['onStartSecondary']);
     });
   });
+
+  testGesture('Cancel the gesture using the cancel event.', (GestureTester tester) {
+    final GestureController controller = GestureController();
+    final List<String> dragCallbacks = <String>[];
+    final PanGestureRecognizer pan = PanGestureRecognizer()
+      ..onlyAcceptDragOnThreshold = false
+      ..onStart = (DragStartDetails details) {
+        dragCallbacks.add('onStart');
+      }
+      ..onUpdate = (DragUpdateDetails details) {
+        dragCallbacks.add('onUpdate');
+      }
+      ..onEnd = (DragEndDetails details) {
+        dragCallbacks.add('onEnd');
+      }
+      ..onCancel = () {
+        dragCallbacks.add('onCancel');
+      };
+    controller.attach(pan);
+    const PointerDownEvent down = PointerDownEvent(
+      pointer: 6,
+      position: Offset(200.0, 200.0),
+    );
+    const PointerMoveEvent move = PointerMoveEvent(
+      pointer: 6,
+      delta: Offset(200.0, 200.0),
+      position: Offset(400.0, 400.0),
+    );
+    const PointerUpEvent up = PointerUpEvent(
+      pointer: 6,
+      position: Offset(400.0, 400.0),
+    );
+    pan.addPointer(down);
+    tester.closeArena(down.pointer);
+    tester.route(down);
+    controller.dispatch(GestureControlCancelEvent());
+    tester.route(move);
+    tester.route(up);
+    expect(dragCallbacks, <String>['onStart', 'onCancel']);
+    pan.dispose();
+    controller.detach(pan);
+  });
 }
 
 class MockHitTestTarget implements HitTestTarget {

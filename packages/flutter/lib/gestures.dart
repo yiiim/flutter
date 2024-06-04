@@ -10,6 +10,7 @@ library gestures;
 export 'src/gestures/arena.dart';
 export 'src/gestures/binding.dart';
 export 'src/gestures/constants.dart';
+export 'src/gestures/controller.dart';
 export 'src/gestures/converter.dart';
 export 'src/gestures/debug.dart';
 export 'src/gestures/drag.dart';
